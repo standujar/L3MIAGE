@@ -1,0 +1,1275 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.02
+Created On: 26/11/2014 21:29:54
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Program    :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7          ORG     $1000
+00001000                             8          
+00001000                             9          
+00001000                            10          
+00001000  4EB9 0000100C             11          jsr init        
+00001006  4EF9 000021DC             12  FIN:    JMP FINPRG
+0000100C                            13  
+0000100C                            14  
+0000100C                            15  
+0000100C                            16  init:                   *****************************Initialisation************************************
+0000100C                            17                                                  
+0000100C  207C 0000204C             18          MOVE.L  #TAB,A0
+00001012  143C 0032                 19          MOVE.B  #50,D2          ** Initialise un tableaux de 255 cases
+00001016                            20          
+00001016  4EB9 0000131E             21          JSR     GRILLE          ** Appel l'affichage
+0000101C                            22  MAZ:    
+0000101C  10FC 0000                 23          MOVE.B  #0,(A0)+        ** Met toutes les cases a 0
+00001020  51CA FFFA                 24          DBRA    D2,MAZ  
+00001024  207C 0000204C             25          MOVE.L  #TAB,A0 
+0000102A  720F                      26          MOVE.L  #15,D1  
+0000102C                            27  LINE_1:                         ** Met la 1ere ligne a 1
+0000102C                            28          
+0000102C  10FC 0001                 29          MOVE.B  #1,(A0)+
+00001030  51C9 FFFA                 30          DBRA    D1,LINE_1       
+00001034  740E                      31          MOVE.L  #14,D2
+00001036                            32  AUTRE_L:                        ** Met 1 sur dans la 1ere case puis saute 14 case puis met 1 ,jusque la derniere ligne 
+00001036  B47C 0000                 33          CMP     #0,D2
+0000103A  6700 0020                 34          BEQ     DERN_L
+0000103E  10FC 0001                 35          MOVE.B  #1,(A0)+        
+00001042  5382                      36          SUB.L   #1,D2
+00001044  7200                      37          MOVE.L  #0,D1
+00001046                            38          
+00001046                            39          
+00001046                            40  SAUT_C:         
+00001046  B27C 000E                 41          CMP     #14,D1                                  
+0000104A                            42                                  ** Tout ca sert a mettre a 1 toutes les cases exterieures dans notre tableau aux dimensions plus petites donc tous les bords sont en vie 
+0000104A  6700 000A                 43          BEQ     DERN_C
+0000104E  5201                      44          ADD.B   #1,D1
+00001050  10FC 0000                 45          MOVE.B  #0,(A0)+
+00001054  60F0                      46          BRA     SAUT_C
+00001056                            47          
+00001056                            48  DERN_C:
+00001056  10FC 0001                 49          MOVE.B  #1,(A0)+
+0000105A                            50          
+0000105A  60DA                      51          BRA     AUTRE_L
+0000105C                            52          
+0000105C                            53          
+0000105C                            54  
+0000105C                            55  DERN_L:                         **      Met 1 sur la derniere ligne
+0000105C  720F                      56          MOVE.L  #15,D1
+0000105E                            57          
+0000105E                            58  LINE_1B:
+0000105E  10FC 0001                 59          MOVE.B  #1,(A0)+
+00001062  51C9 FFFA                 60          DBRA    D1,LINE_1B
+00001066                            61          
+00001066                            62          
+00001066                            63          
+00001066                            64          
+00001066                            65          ***********************************************AJOUT_RANDOM ********************************
+00001066                            66          
+00001066                            67          
+00001066                            68          
+00001066                            69  
+00001066                            70  BOUCLE_RANDOM:                                  
+00001066                            71          
+00001066                            72                  
+00001066  7200                      73          MOVE.L  #0,D1                           
+00001068  207C 0000204C             74          MOVE.L  #TAB,A0
+0000106E  D1FC 00000010             75          ADD.L   #16,A0
+00001074  343C 000E                 76          MOVE.W  #14,D2          **SE DEPLACE SUR LA LIGNE
+00001078  363C 000E                 77          MOVE.W  #14,D3          **SE DEPLACE EN COLONNE
+0000107C                            78          
+0000107C                            79  
+0000107C                            80  
+0000107C                            81  BOUCLE_L_RANDOM:
+0000107C  4EB9 00001308             82          JSR     TIME_RANDOM     ** Renvoi un temps pour separer les actions aleatoires sinon trop rapide et donc pas d'aleatoire cas temps egaux
+00001082  5288                      83          ADD.L   #1,A0   
+00001084  4EB9 000010AE             84          JSR     RANDOM          ** Effectue l'aleatoire
+0000108A  4EB9 000010CA             85          JSR     AFFECTATION
+00001090  B47C 0000                 86          CMP.W   #0,D2
+00001094  6700 0006                 87          BEQ     BOUCLE_C_RANDOM
+00001098  5342                      88          SUB.W   #1,D2   
+0000109A  60E0                      89          BRA     BOUCLE_L_RANDOM
+0000109C                            90  
+0000109C                            91  
+0000109C                            92  BOUCLE_C_RANDOM:                
+0000109C  5343                      93          SUB.W   #1,D3
+0000109E  343C 000E                 94          MOVE.W  #14,D2
+000010A2  5288                      95          ADD.L   #1,A0   
+000010A4  B67C 0000                 96          CMP.W   #0,D3   
+000010A8  6700 006C                 97          BEQ     BOUCLE_TEST
+000010AC  60CE                      98          BRA     BOUCLE_L_RANDOM
+000010AE                            99          
+000010AE                           100          
+000010AE                           101  RANDOM:
+000010AE  4EB9 000021E2            102          JSR     GET_TIME
+000010B4  7800                     103          MOVE.L  #0,D4
+000010B6  1801                     104          MOVE.B  D1,D4
+000010B8  0604 0014                105          ADD.B   #20,D4
+000010BC  C8FC 0004                106          MULU    #4,D4
+000010C0  88FC 0006                107          DIVU    #6,D4   
+000010C4  EC8C                     108          LSR.L   #6,D4
+000010C6  1204                     109          MOVE.B  D4,D1   
+000010C8  4E75                     110          RTS
+000010CA                           111          
+000010CA                           112  AFFECTATION:                    ** Met 1 si l'aleatoire dit qu'il faut en mettre sinon rien ne se passe car les cellules sont deja a 0
+000010CA  B23C 0000                113          CMP.B   #0,D1
+000010CE  6600 07FC                114          BNE     ARRET
+000010D2  10BC 0001                115          MOVE.B  #1,(A0)
+000010D6  4E75                     116          RTS     
+000010D8                           117          
+000010D8                           118                  
+000010D8                           119          
+000010D8                           120                  
+000010D8                           121                          *******************************************AFFICHAGE******************************
+000010D8                           122  
+000010D8                           123          
+000010D8                           124          
+000010D8                           125  
+000010D8                           126  
+000010D8                           127  
+000010D8                           128  
+000010D8                           129                                  ***************BOUCLES PARCOURANT POUR AFFICHAGE**************
+000010D8                           130  
+000010D8                           131  BOUCLE:         
+000010D8                           132  
+000010D8  7200                     133          MOVE.L  #0,D1                           
+000010DA  207C 0000204C            134          MOVE.L  #TAB,A0
+000010E0  D1FC 00000010            135          ADD.L   #16,A0
+000010E6  343C 000E                136          MOVE.W  #14,D2  ******SE DEPLACE SUR LA LIGNE
+000010EA  363C 000E                137          MOVE.W  #14,D3  ******SE DEPLACE EN COLONNE
+000010EE                           138          
+000010EE                           139          
+000010EE                           140          
+000010EE                           141          
+000010EE                           142  
+000010EE                           143          
+000010EE                           144  
+000010EE                           145  
+000010EE                           146  BOUCLE_L:
+000010EE                           147          
+000010EE  5288                     148          ADD.L   #1,A0   
+000010F0  4EB9 0000156E            149          JSR     AJOUT_VIE               ** Colore la case en fonction du nombre "indique dans sa case" 
+000010F6  B47C 0000                150          CMP.W   #0,D2
+000010FA  6700 0006                151          BEQ     BOUCLE_C
+000010FE  5342                     152          SUB.W   #1,D2   
+00001100  60EC                     153          BRA     BOUCLE_L
+00001102                           154  
+00001102                           155  
+00001102                           156  BOUCLE_C:
+00001102  5343                     157          SUB.W   #1,D3
+00001104  343C 000E                158          MOVE.W  #14,D2
+00001108  5288                     159          ADD.L   #1,A0   
+0000110A  B67C 0000                160          CMP.W   #0,D3   
+0000110E  6700 0108                161          BEQ     BOUCLE_NEW_GENE         ** Envoie a la creation de la generation suivante       
+00001112  60DA                     162          BRA     BOUCLE_L
+00001114  4E75                     163          RTS
+00001116                           164          
+00001116                           165          
+00001116                           166          
+00001116                           167  
+00001116                           168          
+00001116                           169  *************************************BOUCLE POUR TEST**************************
+00001116                           170  
+00001116                           171  
+00001116                           172  
+00001116                           173          
+00001116                           174  
+00001116                           175  BOUCLE_TEST:
+00001116                           176          
+00001116  4EB9 00001278            177          JSR     TIME                    ** Permet de separer les generations avec un temps defini
+0000111C  7800                     178          MOVE.L  #0,D4   
+0000111E  7200                     179          MOVE.L  #0,D1                           
+00001120  207C 0000204C            180          MOVE.L  #TAB,A0
+00001126  D1FC 00000011            181          ADD.L   #17,A0
+0000112C  7400                     182          MOVE.L  #0,D2
+0000112E  7600                     183          MOVE.L  #0,D3
+00001130  143C 000F                184          MOVE.B  #15,D2
+00001134  163C 000E                185          MOVE.B  #14,D3
+00001138                           186          
+00001138                           187  
+00001138                           188  
+00001138                           189  BOUCLE_L_TEST:
+00001138  183C 0000                190          MOVE.B  #0,D4
+0000113C                           191          
+0000113C                           192          
+0000113C  5302                     193          SUB.B   #1,D2
+0000113E  B43C 0000                194          CMP.B   #0,D2
+00001142  6700 0012                195          BEQ     BOUCLE_C_TEST
+00001146  4EB9 00001168            196          JSR     CHECK                   ** "Regarde ce qui se passe autour de la cellule" 
+0000114C  4EB9 000011E0            197          JSR     OPERATION
+00001152  5288                     198          ADD.L   #1,A0
+00001154  60E2                     199          BRA     BOUCLE_L_TEST
+00001156                           200  
+00001156                           201  
+00001156                           202  
+00001156                           203  
+00001156                           204  BOUCLE_C_TEST:
+00001156  5303                     205          SUB.B   #1,D3
+00001158  143C 000F                206          MOVE.B  #15,D2
+0000115C  5488                     207          ADD.L   #2,A0   
+0000115E  B63C 0000                208          CMP.B   #0,D3   
+00001162  6700 FF74                209          BEQ     BOUCLE
+00001166  60D0                     210          BRA     BOUCLE_L_TEST
+00001168                           211  
+00001168                           212  
+00001168                           213          
+00001168                           214                  
+00001168                           215  
+00001168                           216  
+00001168                           217  
+00001168                           218                                          ***************TEST DU NOMBRE DE VIE AUTOUR**************
+00001168                           219  
+00001168                           220  CHECK:
+00001168  91FC 00000011            221          SUB.L   #17,A0  ******** POSITIONNE A0 EN HAUT A GAUCHE AVEC DESCENTE EN "S"
+0000116E  1210                     222          MOVE.B  (A0),D1
+00001170  4EB9 000011D2            223          JSR     VIE_MORT
+00001176  5288                     224          ADD.L   #1,A0           *HAUT MILIEU
+00001178  1210                     225          MOVE.B  (A0),D1
+0000117A  4EB9 000011D2            226          JSR     VIE_MORT
+00001180  5288                     227          ADD.L   #1,A0           *HAUT DROIT
+00001182  1210                     228          MOVE.B  (A0),D1
+00001184  4EB9 000011D2            229          JSR     VIE_MORT
+0000118A  D1FC 00000010            230          ADD.L   #16,A0          *MILIEU  DROIT
+00001190  1210                     231          MOVE.B  (A0),D1
+00001192  4EB9 000011D2            232          JSR     VIE_MORT
+00001198  5588                     233          SUB.L   #2,A0           *MILIEU GAUCHE
+0000119A  1210                     234          MOVE.B  (A0),D1
+0000119C  4EB9 000011D2            235          JSR     VIE_MORT
+000011A2  D1FC 00000010            236          ADD.L   #16,A0          *BAS GAUCHE
+000011A8  1210                     237          MOVE.B  (A0),D1
+000011AA  4EB9 000011D2            238          JSR     VIE_MORT
+000011B0  5288                     239          ADD.L   #1,A0           *BAS MILIEU
+000011B2  1210                     240          MOVE.B  (A0),D1
+000011B4  4EB9 000011D2            241          JSR     VIE_MORT
+000011BA  5288                     242          ADD.L   #1,A0           *BAS GAUCHE
+000011BC  1210                     243          MOVE.B  (A0),D1
+000011BE  4EB9 000011D2            244          JSR     VIE_MORT
+000011C4  91FC 00000011            245          SUB.L   #17,A0          *REMET A0 POSITION INITIALE     
+000011CA  1210                     246          MOVE.B  (A0),D1
+000011CC                           247          
+000011CC  4E75                     248          RTS
+000011CE                           249          
+000011CE                           250  
+000011CE                           251  COMPTEUR:                       ** Met le nombre de cellules adjacentes dans D4
+000011CE  5204                     252          ADD.B   #1,D4
+000011D0  4E75                     253          RTS
+000011D2                           254  
+000011D2                           255  VIE_MORT:                       ** Si la cellule a deja un 1 ou un 2 dans sa case on appelle compteur pour ajouter 1 
+000011D2                           256  
+000011D2  B23C 0001                257          CMP.B   #1,D1
+000011D6  67F6                     258          BEQ     COMPTEUR
+000011D8  B23C 0002                259          CMP.B   #2,D1
+000011DC  67F0                     260          BEQ     COMPTEUR
+000011DE  4E75                     261          RTS
+000011E0                           262  
+000011E0                           263  
+000011E0                           264  
+000011E0                           265  
+000011E0                           266  
+000011E0                           267  OPERATION:                      ** On fait des operations differentes si c'est une cellule vivante ou morte et on le differencie dans cette action
+000011E0                           268          
+000011E0  B23C 0001                269          CMP.B   #1,D1
+000011E4  6700 000A                270          BEQ     VIE
+000011E8  B23C 0000                271          CMP.B   #0,D1
+000011EC  6700 0014                272          BEQ     DIE
+000011F0                           273  
+000011F0                           274          
+000011F0                           275  
+000011F0                           276  VIE:                            ** Si la cellule a plus de 3 ou moins que 2 cellules adjacentes elle meurt                      
+000011F0  B87C 0003                277          CMP     #3,D4
+000011F4  6E00 0016                278          BGT     MOURRANTE
+000011F8  B87C 0002                279          CMP     #2,D4
+000011FC  6D00 000E                280          BLT     MOURRANTE
+00001200                           281          
+00001200                           282  
+00001200                           283          
+00001200  4E75                     284          RTS
+00001202                           285  
+00001202                           286  
+00001202                           287  
+00001202                           288  DIE:                            ** Si la cellule a 3  cellules adjacentes elle est mise en statut naissante
+00001202  B87C 0003                289          CMP     #3,D4
+00001206  6700 000A                290          BEQ     NAISSANTE
+0000120A  4E75                     291          RTS
+0000120C                           292  
+0000120C                           293  MOURRANTE:                      ** Met 2 dans les cellules mourantes 
+0000120C  10BC 0002                294          MOVE.B  #2,(A0)
+00001210  4E75                     295          RTS
+00001212                           296          
+00001212                           297  NAISSANTE:
+00001212  10BC 0003                298          MOVE.B  #3,(A0)         ** Met 3 dans les cellules naissantes
+00001216  4E75                     299          RTS     
+00001218                           300          
+00001218                           301  
+00001218                           302  
+00001218                           303  
+00001218                           304  BOUCLE_NEW_GENE:                ** Boucle qui va servir pour la generation suivante
+00001218                           305                                  
+00001218  207C 0000204C            306          MOVE.L  #TAB,A0
+0000121E  D1FC 00000011            307          ADD.L   #17,A0
+00001224  143C 000F                308          MOVE.B  #15,D2
+00001228  163C 000E                309          MOVE.B  #14,D3
+0000122C                           310          
+0000122C                           311  
+0000122C                           312  
+0000122C                           313  BOUCLE_L_NEW_GENE:
+0000122C  183C 0000                314          MOVE.B  #0,D4   
+00001230  5302                     315          SUB.B   #1,D2
+00001232  B43C 0000                316          CMP.B   #0,D2
+00001236  6700 000C                317          BEQ     BOUCLE_C_NEW_GENE
+0000123A  4EB9 00001256            318          JSR     GENESE          ** Check l'etat de la cellule pour changer le chiffre si elle va naitre ou mourir 
+00001240  5288                     319          ADD.L   #1,A0
+00001242  60E8                     320          BRA     BOUCLE_L_NEW_GENE
+00001244                           321  
+00001244                           322  
+00001244                           323  
+00001244                           324  
+00001244                           325  BOUCLE_C_NEW_GENE:
+00001244  5303                     326          SUB.B   #1,D3
+00001246  143C 000F                327          MOVE.B  #15,D2
+0000124A  5488                     328          ADD.L   #2,A0   
+0000124C  B63C 0000                329          CMP.B   #0,D3
+00001250  6700 FEC4                330          BEQ     BOUCLE_TEST
+00001254  60D6                     331          BRA     BOUCLE_L_NEW_GENE
+00001256                           332  
+00001256                           333  
+00001256                           334  
+00001256                           335  
+00001256                           336  GENESE:                         ** Si la cellule a 3 elle va naitre si elle a 2 elle va mourir
+00001256  1210                     337          MOVE.B  (A0),D1
+00001258  B23C 0003                338          CMP.B   #3,D1
+0000125C  6700 000C                339          BEQ     NAIT
+00001260  B23C 0002                340          CMP.B   #2,D1
+00001264  6700 000A                341          BEQ     MEURT
+00001268  4E75                     342          RTS
+0000126A                           343  
+0000126A                           344  
+0000126A                           345  
+0000126A                           346  NAIT:                           ** Met 1  si elle nait
+0000126A  10BC 0001                347          MOVE.B  #1,(A0)
+0000126E  4E75                     348          RTS
+00001270                           349  
+00001270                           350  
+00001270                           351  
+00001270                           352  MEURT:                          ** Met 0  si elle meurt
+00001270  10BC 0000                353          MOVE.B  #0,(A0)
+00001274  4E75                     354          RTS
+00001276                           355          
+00001276                           356          
+00001276                           357          
+00001276                           358          
+00001276  4E75                     359          RTS     
+00001278                           360          
+00001278                           361          
+00001278                           362          
+00001278                           363  
+00001278                           364  TIME:                           ** Recupere le temps pour faire par la suite une boucle pour separer les affichages 
+00001278                           365          
+00001278  4EB9 000021E2            366          JSR     GET_TIME
+0000127E  2801                     367          MOVE.L  D1,D4
+00001280  0684 00000064            368          ADD.L   #100,D4
+00001286                           369  
+00001286                           370          
+00001286                           371          
+00001286                           372          
+00001286                           373  CLOCK:                          ** Compare les temps entre D1 et D4 tant que d1>d4 on recommence        
+00001286                           374                  
+00001286  4EB9 000021E2            375          JSR     GET_TIME
+0000128C  B881                     376          CMP.L   D1,D4
+0000128E  6E00 0004                377          BGT     CLOCK_DEMI      
+00001292  4E75                     378          RTS
+00001294                           379          
+00001294                           380  CLOCK_DEMI:     
+00001294  4EB9 0000129C            381          JSR     STATUS_TEST     ** Test le statut cad si un bouton a ete utilise
+0000129A  60EA                     382          BRA     CLOCK
+0000129C                           383          
+0000129C                           384  STATUS_TEST:
+0000129C  4EB9 00001748            385          JSR     TEST_ENFONCE    ** Regarde quel bouton utilise si l'action a ete faite
+000012A2  0C79 0001 0000204A       386          CMP.W   #1,STATUS
+000012AA  6700 002C                387          BEQ     STATUS_1
+000012AE  0C79 0002 0000204A       388          CMP.W   #2,STATUS
+000012B6  6700 001A                389          BEQ     STATUS_2        
+000012BA  0C79 0003 0000204A       390          CMP.W   #3,STATUS
+000012C2  6700 001E                391          BEQ     STATUS_3
+000012C6  4E75                     392          RTS     
+000012C8                           393          
+000012C8                           394  RAZ_STATUS:
+000012C8  33FC 0000 0000204A       395          MOVE.W  #0,STATUS       ** Remet le statut a 0
+000012D0  4E75                     396          RTS
+000012D2                           397          
+000012D2                           398  STATUS_2:******CONTINUE*****
+000012D2  4EB8 12C8                399          JSR     RAZ_STATUS
+000012D6  60AE                     400          BRA     CLOCK   
+000012D8                           401          
+000012D8                           402          
+000012D8                           403  STATUS_1:******PAS A PAS*****
+000012D8  33FC 0003 0000204A       404          MOVE.W  #3,STATUS               
+000012E0  4E75                     405          RTS
+000012E2                           406                                          
+000012E2                           407                  
+000012E2                           408  STATUS_3:******PAUSE****        
+000012E2                           409          
+000012E2                           410          
+000012E2  4EB9 00001748            411          JSR     TEST_ENFONCE
+000012E8  0C79 0001 0000204A       412          CMP.W   #1,STATUS
+000012F0  67E6                     413          BEQ     STATUS_1
+000012F2  0C79 0002 0000204A       414          CMP.W   #2,STATUS
+000012FA  67A0                     415          BEQ     STATUS_TEST
+000012FC  0C79 0003 0000204A       416          CMP.W   #3,STATUS       
+00001304  67DC                     417          BEQ     STATUS_3
+00001306  4E75                     418          RTS
+00001308                           419          
+00001308                           420          
+00001308                           421  TIME_RANDOM:                                    ** separe le temps pour la boucle random
+00001308  4EB9 000021E2            422          JSR     GET_TIME
+0000130E  2801                     423          MOVE.L  D1,D4
+00001310  5484                     424          ADD.L   #2,D4
+00001312                           425  CLOCK_RANDOM:   
+00001312  4EB9 000021E2            426          JSR     GET_TIME
+00001318  B881                     427          CMP.L   D1,D4
+0000131A  6EF6                     428          BGT     CLOCK_RANDOM    
+0000131C  4E75                     429          RTS
+0000131E                           430  
+0000131E                           431  
+0000131E                           432  
+0000131E                           433  
+0000131E                           434  
+0000131E                           435  
+0000131E                           436  
+0000131E                           437  
+0000131E                           438  
+0000131E                           439  *****************INITIALISATION DU FOND EN BLANC, BOUTON ET LEGENDE***********************
+0000131E                           440  GRILLE: 
+0000131E  223C 02840320            441          MOVE.L  #$02840320,D1
+00001324  4EB9 00002202            442          JSR     RESOLUTION
+0000132A  223C 0099FFFF            443          MOVE.L  #$0099FFFF,D1
+00001330  4EB9 00002154            444          JSR     SET_FILL_COLOR
+00001336  223C 0099FFFF            445          MOVE.L  #$0099FFFF,D1
+0000133C  4EB9 0000214C            446          JSR     SET_PEN_COLOR
+00001342  323C 0000                447          MOVE.W  #0,D1           *X1
+00001346  343C 0000                448          MOVE.W  #0,D2           *Y1
+0000134A  363C 0320                449          MOVE.W  #$320,D3        *X2
+0000134E  383C 0320                450          MOVE.W  #$320,D4        *Y2
+00001352  4EB9 00002184            451          JSR     DRAW_FILL_RECT
+00001358                           452          
+00001358                           453  BOUTON_PAS_A_PAS:
+00001358  223C 000000FF            454          MOVE.L  #$000000FF,D1
+0000135E  4EB9 00002154            455          JSR     SET_FILL_COLOR
+00001364  7200                     456          MOVE.L  #$00000000,D1
+00001366  4EB9 0000214C            457          JSR     SET_PEN_COLOR
+0000136C  323C 0014                458          MOVE.W  #20,D1          *X1
+00001370  343C 02BC                459          MOVE.W  #700,D2         *Y1
+00001374  363C 0064                460          MOVE.W  #100,D3         *X2
+00001378  383C 02E4                461          MOVE.W  #740,D4         *Y2
+0000137C  4EB9 00002184            462          JSR     DRAW_FILL_RECT
+00001382  323C 0019                463          MOVE.W  #25,D1          *X1
+00001386  343C 02C6                464          MOVE.W  #710,D2         *Y1
+0000138A  227C 00002028            465          MOVE.L  #B1,A1
+00001390  4EB9 000021B4            466          JSR     DRAW_STRING
+00001396                           467  
+00001396                           468          
+00001396                           469  BOUTON_CONTINUE:
+00001396  223C 000000FF            470          MOVE.L  #$000000FF,D1
+0000139C  4EB9 00002154            471          JSR     SET_FILL_COLOR
+000013A2  7200                     472          MOVE.L  #$00000000,D1
+000013A4  4EB9 0000214C            473          JSR     SET_PEN_COLOR
+000013AA  323C 0078                474          MOVE.W  #120,D1         *X1
+000013AE  343C 02BC                475          MOVE.W  #700,D2         *Y1
+000013B2  363C 00C8                476          MOVE.W  #200,D3         *X2
+000013B6  383C 02E4                477          MOVE.W  #740,D4         *Y2
+000013BA  4EB9 00002184            478          JSR     DRAW_FILL_RECT
+000013C0  323C 007A                479          MOVE.W  #122,D1         *X1
+000013C4  343C 02C6                480          MOVE.W  #710,D2         *Y1
+000013C8  227C 00002034            481          MOVE.L  #B2,A1
+000013CE  4EB9 000021B4            482          JSR     DRAW_STRING
+000013D4                           483          
+000013D4                           484          
+000013D4                           485  BOUTONS_STOP:
+000013D4  223C 000000FF            486          MOVE.L  #$000000FF,D1
+000013DA  4EB9 00002154            487          JSR     SET_FILL_COLOR
+000013E0  7200                     488          MOVE.L  #$00000000,D1
+000013E2  4EB9 0000214C            489          JSR     SET_PEN_COLOR
+000013E8  323C 00DC                490          MOVE.W  #220,D1         *X1
+000013EC  343C 02BC                491          MOVE.W  #700,D2         *Y1
+000013F0  363C 012C                492          MOVE.W  #300,D3         *X2
+000013F4  383C 02E4                493          MOVE.W  #740,D4         *Y2
+000013F8  4EB9 00002184            494          JSR     DRAW_FILL_RECT  
+000013FE  323C 00DE                495          MOVE.W  #222,D1         *X1
+00001402  343C 02C6                496          MOVE.W  #710,D2         *Y1
+00001406  227C 00002040            497          MOVE.L  #B3,A1
+0000140C  4EB9 000021B4            498          JSR     DRAW_STRING
+00001412                           499          
+00001412                           500  
+00001412                           501  LEGENDE_VIE     
+00001412                           502  
+00001412  223C 00006400            503          MOVE.L  #$00006400,D1
+00001418  4EB9 00002154            504          JSR     SET_FILL_COLOR
+0000141E  7200                     505          MOVE.L  #$00000000,D1
+00001420  4EB9 0000214C            506          JSR     SET_PEN_COLOR
+00001426  323C 0154                507          MOVE.W  #340,D1         *X1
+0000142A  343C 0294                508          MOVE.W  #660,D2         *Y1
+0000142E  363C 0186                509          MOVE.W  #390,D3         *X2
+00001432  383C 02BC                510          MOVE.W  #700,D4         *Y2
+00001436  4EB9 0000218C            511          JSR     DRAW_FILL_ELLIPSE
+0000143C  323C 0154                512          MOVE.W  #340,D1         *X1
+00001440  343C 02C6                513          MOVE.W  #710,D2         *Y1
+00001444  227C 00002008            514          MOVE.L  #C1,A1
+0000144A  4EB9 000021B4            515          JSR     DRAW_STRING
+00001450                           516          
+00001450                           517  LEGENDE_MORTE   
+00001450                           518  
+00001450  223C 0030FFFF            519          MOVE.L  #$0030FFFF,D1
+00001456  4EB9 00002154            520          JSR     SET_FILL_COLOR
+0000145C  7200                     521          MOVE.L  #$00000000,D1
+0000145E  4EB9 0000214C            522          JSR     SET_PEN_COLOR
+00001464  323C 019A                523          MOVE.W  #410,D1         *X1
+00001468  343C 0294                524          MOVE.W  #660,D2         *Y1
+0000146C  363C 01CC                525          MOVE.W  #460,D3         *X2
+00001470  383C 02BC                526          MOVE.W  #700,D4         *Y2
+00001474  4EB9 0000218C            527          JSR     DRAW_FILL_ELLIPSE       
+0000147A  323C 01A1                528          MOVE.W  #417,D1         *X1
+0000147E  343C 02C6                529          MOVE.W  #710,D2         *Y1
+00001482  227C 00002012            530          MOVE.L  #C2,A1
+00001488  4EB9 000021B4            531          JSR     DRAW_STRING
+0000148E                           532          
+0000148E                           533  LEGENDE_NAISSANTE       
+0000148E                           534  
+0000148E  223C 008B8B00            535          MOVE.L  #$008B8B00,D1
+00001494  4EB9 00002154            536          JSR     SET_FILL_COLOR
+0000149A  7200                     537          MOVE.L  #$00000000,D1
+0000149C  4EB9 0000214C            538          JSR     SET_PEN_COLOR
+000014A2  323C 01E0                539          MOVE.W  #480,D1         *X1
+000014A6  343C 0294                540          MOVE.W  #660,D2         *Y1
+000014AA  363C 0212                541          MOVE.W  #530,D3         *X2
+000014AE  383C 02BC                542          MOVE.W  #700,D4         *Y2
+000014B2  4EB9 0000218C            543          JSR     DRAW_FILL_ELLIPSE       
+000014B8  323C 01EA                544          MOVE.W  #490,D1         *X1
+000014BC  343C 02C6                545          MOVE.W  #710,D2         *Y1
+000014C0  227C 0000201A            546          MOVE.L  #C3,A1
+000014C6  4EB9 000021B4            547          JSR     DRAW_STRING     
+000014CC                           548  
+000014CC                           549  LEGENDE_MOURANTE        
+000014CC                           550  
+000014CC  223C 00008CFF            551          MOVE.L  #$00008CFF,D1
+000014D2  4EB9 00002154            552          JSR     SET_FILL_COLOR
+000014D8  7200                     553          MOVE.L  #$00000000,D1
+000014DA  4EB9 0000214C            554          JSR     SET_PEN_COLOR
+000014E0  323C 0226                555          MOVE.W  #550,D1         *X1
+000014E4  343C 0294                556          MOVE.W  #660,D2         *Y1
+000014E8  363C 0258                557          MOVE.W  #600,D3         *X2
+000014EC  383C 02BC                558          MOVE.W  #700,D4         *Y2
+000014F0  4EB9 0000218C            559          JSR     DRAW_FILL_ELLIPSE       
+000014F6  323C 022B                560          MOVE.W  #555,D1         *X1
+000014FA  343C 02C6                561          MOVE.W  #710,D2         *Y1
+000014FE  227C 00002020            562          MOVE.L  #C4,A1
+00001504  4EB9 000021B4            563          JSR     DRAW_STRING     
+0000150A                           564  **************************1ERE LIGNE ET INITIALISATION DU QUADRILLAGE EN NOIR**********************     
+0000150A                           565          
+0000150A  7200                     566          MOVE.L  #$00000000,D1
+0000150C  4EB9 0000214C            567          JSR     SET_PEN_COLOR   
+00001512  323C 0284                568          MOVE    #644,D1                                         **POUR REDUIRE BORD ENLEVER 80 
+00001516  363C 0284                569          MOVE    #644,D3
+0000151A  343C 0000                570          MOVE    #0,D2
+0000151E  383C 0284                571          MOVE    #644,D4
+00001522  4EB9 0000216C            572          JSR     DRAW_LINE
+00001528                           573          
+00001528                           574  **************************QUADRILLE EN NOIR DE DROITE A GAUCHE****************************
+00001528                           575          
+00001528                           576  QUADRILLAGE_C:          
+00001528  B27C 0000                577          CMP.W   #0,D1
+0000152C  6700 0012                578          BEQ     INTERMED
+00001530  0441 002E                579          SUB.W   #46,D1
+00001534  0443 002E                580          SUB.W   #46,D3
+00001538  4EB9 0000216C            581          JSR     DRAW_LINE
+0000153E  60E8                     582          BRA     QUADRILLAGE_C 
+00001540                           583          
+00001540                           584  *************************INITIALISATION DES CONSTANTES POUR LE QUADRILLAGE DE LIGNE****************
+00001540                           585          
+00001540                           586  INTERMED:
+00001540  323C 0000                587          MOVE    #0,D1
+00001544  363C 0284                588          MOVE    #644,D3
+00001548  343C 0284                589          MOVE    #644,D2
+0000154C  383C 0284                590          MOVE    #644,D4 
+00001550  4EB9 0000216C            591          JSR     DRAW_LINE
+00001556                           592          
+00001556                           593  **************************QUADRILLE EN NOIR DE BAS EN HAUT****************************
+00001556                           594          
+00001556                           595  QUADRILLAGE_L:
+00001556  B87C 0000                596          CMP.W   #0,D4
+0000155A  6700 0370                597          BEQ     ARRET
+0000155E  0442 002E                598          SUB.W   #46,D2
+00001562  0444 002E                599          SUB.W   #46,D4
+00001566  4EB9 0000216C            600          JSR     DRAW_LINE
+0000156C  60E8                     601          BRA     QUADRILLAGE_L
+0000156E                           602  
+0000156E                           603          
+0000156E                           604  *************************************AJOUT DES CELLULES DE VIE(couleur)****************************
+0000156E                           605  AJOUT_VIE:
+0000156E  1210                     606          MOVE.B  (A0),D1
+00001570                           607          
+00001570  B23C 0001                608          CMP.B   #1,D1
+00001574  6600 0072                609          BNE     RAZ_POINT
+00001578  33C2 00002004            610          MOVE.W  D2,SAVE_D2
+0000157E  33C3 00002006            611          MOVE.W  D3,SAVE_D3
+00001584  9579 00002000            612          SUB.W   D2,CELLULE_X
+0000158A  9779 00002002            613          SUB.W   D3,CELLULE_Y
+00001590  7200                     614          MOVE.L  #$00000000,D1
+00001592  4EB9 0000214C            615          JSR     SET_PEN_COLOR
+00001598  223C 00006400            616          MOVE.L  #$00006400,D1   ***********VERT EST VIVANTE*************
+0000159E  4EB9 00002154            617          JSR     SET_FILL_COLOR
+000015A4                           618          
+000015A4  3239 00002000            619          MOVE.W  CELLULE_X,D1
+000015AA  C2FC 002E                620          MULU.W  #46,D1  
+000015AE  3439 00002002            621          MOVE.W  CELLULE_Y,D2    
+000015B4  C4FC 002E                622          MULU.W  #46,D2
+000015B8  3601                     623          MOVE.W  D1,D3
+000015BA  0643 002E                624          ADD.W   #46,D3
+000015BE  3802                     625          MOVE.W  D2,D4
+000015C0  0644 002E                626          ADD.W   #46,D4
+000015C4  4EB9 0000218C            627          JSR     DRAW_FILL_ELLIPSE
+000015CA  3439 00002004            628          MOVE.W  SAVE_D2,D2
+000015D0  3639 00002006            629          MOVE.W  SAVE_D3,D3
+000015D6  33FC 000E 00002000       630          MOVE.W  #14,CELLULE_X
+000015DE  33FC 000E 00002002       631          MOVE.W  #14,CELLULE_Y
+000015E6  4E75                     632          RTS
+000015E8                           633  
+000015E8                           634  
+000015E8                           635  RAZ_POINT:
+000015E8  B23C 0000                636          CMP.B   #0,D1
+000015EC  6600 0072                637          BNE     COLOR_NAIT
+000015F0  33C2 00002004            638          MOVE.W  D2,SAVE_D2
+000015F6  33C3 00002006            639          MOVE.W  D3,SAVE_D3
+000015FC  9579 00002000            640          SUB.W   D2,CELLULE_X
+00001602  9779 00002002            641          SUB.W   D3,CELLULE_Y
+00001608  7200                     642          MOVE.L  #$00000000,D1
+0000160A  4EB9 0000214C            643          JSR     SET_PEN_COLOR
+00001610  223C 0099FFFF            644          MOVE.L  #$0099FFFF,D1   ***********EST MORT*************
+00001616  4EB9 00002154            645          JSR     SET_FILL_COLOR
+0000161C                           646          
+0000161C  3239 00002000            647          MOVE.W  CELLULE_X,D1
+00001622  C2FC 002E                648          MULU.W  #46,D1  
+00001626  3439 00002002            649          MOVE.W  CELLULE_Y,D2    
+0000162C  C4FC 002E                650          MULU.W  #46,D2
+00001630  3601                     651          MOVE.W  D1,D3
+00001632  0643 002E                652          ADD.W   #46,D3
+00001636  3802                     653          MOVE.W  D2,D4
+00001638  0644 002E                654          ADD.W   #46,D4
+0000163C  4EB9 0000218C            655          JSR     DRAW_FILL_ELLIPSE
+00001642  3439 00002004            656          MOVE.W  SAVE_D2,D2
+00001648  3639 00002006            657          MOVE.W  SAVE_D3,D3
+0000164E  33FC 000E 00002000       658          MOVE.W  #14,CELLULE_X
+00001656  33FC 000E 00002002       659          MOVE.W  #14,CELLULE_Y
+0000165E  4E75                     660          RTS
+00001660                           661          
+00001660                           662  COLOR_NAIT:
+00001660  B23C 0003                663          CMP.B   #3,D1
+00001664  6600 0072                664          BNE     COLOR_MORT
+00001668  33C2 00002004            665          MOVE.W  D2,SAVE_D2
+0000166E  33C3 00002006            666          MOVE.W  D3,SAVE_D3
+00001674  9579 00002000            667          SUB.W   D2,CELLULE_X
+0000167A  9779 00002002            668          SUB.W   D3,CELLULE_Y
+00001680  7200                     669          MOVE.L  #$00000000,D1
+00001682  4EB9 0000214C            670          JSR     SET_PEN_COLOR
+00001688  223C 008B8B00            671          MOVE.L  #$008B8B00,D1   ***********BLEU VIENT DE NAITRE*************
+0000168E  4EB9 00002154            672          JSR     SET_FILL_COLOR
+00001694                           673          
+00001694  3239 00002000            674          MOVE.W  CELLULE_X,D1
+0000169A  C2FC 002E                675          MULU.W  #46,D1  
+0000169E  3439 00002002            676          MOVE.W  CELLULE_Y,D2    
+000016A4  C4FC 002E                677          MULU.W  #46,D2
+000016A8  3601                     678          MOVE.W  D1,D3
+000016AA  0643 002E                679          ADD.W   #46,D3
+000016AE  3802                     680          MOVE.W  D2,D4
+000016B0  0644 002E                681          ADD.W   #46,D4
+000016B4  4EB9 0000218C            682          JSR     DRAW_FILL_ELLIPSE
+000016BA  3439 00002004            683          MOVE.W  SAVE_D2,D2
+000016C0  3639 00002006            684          MOVE.W  SAVE_D3,D3
+000016C6  33FC 000E 00002000       685          MOVE.W  #14,CELLULE_X
+000016CE  33FC 000E 00002002       686          MOVE.W  #14,CELLULE_Y
+000016D6  4E75                     687          RTS
+000016D8                           688          
+000016D8                           689  COLOR_MORT:
+000016D8  33C2 00002004            690          MOVE.W  D2,SAVE_D2
+000016DE  33C3 00002006            691          MOVE.W  D3,SAVE_D3
+000016E4  9579 00002000            692          SUB.W   D2,CELLULE_X
+000016EA  9779 00002002            693          SUB.W   D3,CELLULE_Y
+000016F0  7200                     694          MOVE.L  #$00000000,D1
+000016F2  4EB9 0000214C            695          JSR     SET_PEN_COLOR
+000016F8  223C 00008CFF            696          MOVE.L  #$00008CFF,D1   ***********ORANGE SE MEURT*************
+000016FE  4EB9 00002154            697          JSR     SET_FILL_COLOR
+00001704                           698          
+00001704  3239 00002000            699          MOVE.W  CELLULE_X,D1
+0000170A  C2FC 002E                700          MULU.W  #46,D1  
+0000170E  3439 00002002            701          MOVE.W  CELLULE_Y,D2    
+00001714  C4FC 002E                702          MULU.W  #46,D2
+00001718  3601                     703          MOVE.W  D1,D3
+0000171A  0643 002E                704          ADD.W   #46,D3
+0000171E  3802                     705          MOVE.W  D2,D4
+00001720  0644 002E                706          ADD.W   #46,D4
+00001724  4EB9 0000218C            707          JSR     DRAW_FILL_ELLIPSE
+0000172A  3439 00002004            708          MOVE.W  SAVE_D2,D2
+00001730  3639 00002006            709          MOVE.W  SAVE_D3,D3
+00001736  33FC 000E 00002000       710          MOVE.W  #14,CELLULE_X
+0000173E  33FC 000E 00002002       711          MOVE.W  #14,CELLULE_Y
+00001746  4E75                     712          RTS
+00001748                           713  **********************************SOURIS************************************    
+00001748                           714          
+00001748                           715  TEST_ENFONCE:
+00001748  7200                     716          Move.l  #0,D1
+0000174A  4EB9 0000220A            717          JSR     GET_MOUSE
+00001750  C03C 0001                718          AND.B   #%00000001,D0
+00001754  4EB9 00001764            719          JSR     RECUP_POS_SOURIS
+0000175A  B03C 0001                720          CMP.B   #1,d0
+0000175E  6700 000C                721          BEQ     TEST_X_DEBUT_PAS
+00001762  4E75                     722          rts
+00001764                           723  
+00001764                           724  RECUP_POS_SOURIS:  ************DONNE LA POSITION DE LA SOURIS************
+00001764  3C01                     725          move.w  d1,d6 *x
+00001766  4841                     726          swap    d1
+00001768  3E01                     727          move.w  d1,d7 *y
+0000176A                           728  
+0000176A  4E75                     729          RTS
+0000176C                           730  
+0000176C                           731  
+0000176C                           732  
+0000176C                           733  TEST_X_DEBUT_PAS:       *********POUR BOUTON  pas a pas*****    
+0000176C                           734          
+0000176C  BC7C 0014                735          cmp.w   #20,d6
+00001770  6C00 0004                736          bge     TEST_X_FIN_PAS
+00001774  4E75                     737          RTS
+00001776                           738          
+00001776                           739  TEST_X_FIN_PAS:
+00001776                           740  
+00001776  BC7C 0064                741          cmp.w   #100,d6
+0000177A  6F00 0006                742          ble     TEST_Y_DEBUT_PAS
+0000177E  6000 0016                743          BRA     TEST_X_DEBUT_CONTINUE
+00001782                           744  
+00001782                           745  TEST_Y_DEBUT_PAS:       
+00001782  BE7C 02BC                746          cmp.w   #700,d7
+00001786  6C00 0004                747          bge     TEST_Y_FIN_PAS
+0000178A  4E75                     748          RTS
+0000178C                           749          
+0000178C                           750  TEST_Y_FIN_PAS:
+0000178C                           751  
+0000178C  BE7C 02E4                752          cmp.w   #740,d7
+00001790  6F00 0056                753          ble     RELACHE_PAS
+00001794  4E75                     754          RTS
+00001796                           755  
+00001796                           756  TEST_X_DEBUT_CONTINUE:
+00001796  BC7C 0078                757          cmp.w   #120,d6
+0000179A  6C00 0004                758          bge     TEST_X_FIN_CONTINUE
+0000179E  4E75                     759          RTS
+000017A0                           760  
+000017A0                           761  TEST_X_FIN_CONTINUE:
+000017A0  BC7C 00C8                762          cmp.w   #200,d6
+000017A4  6F00 0006                763          ble     TEST_Y_DEBUT_CONTINUE
+000017A8  6000 0016                764          BRA     TEST_X_DEBUT_STOP
+000017AC                           765          
+000017AC                           766  TEST_Y_DEBUT_CONTINUE:  
+000017AC  BE7C 02BC                767          cmp.w   #700,d7
+000017B0  6C00 0004                768          bge     TEST_Y_FIN_CONTINUE
+000017B4  4E75                     769          RTS
+000017B6                           770          
+000017B6                           771  TEST_Y_FIN_CONTINUE:    
+000017B6  BE7C 02E4                772          cmp.w   #740,d7
+000017BA  6F00 006E                773          ble     RELACHE_CONTINUE
+000017BE  4E75                     774          RTS
+000017C0                           775  TEST_X_DEBUT_STOP:      
+000017C0  BC7C 00DC                776          cmp.w   #220,d6
+000017C4  6C00 0004                777          bge     TEST_X_FIN_STOP
+000017C8  4E75                     778          RTS
+000017CA                           779          
+000017CA                           780  TEST_X_FIN_STOP:        
+000017CA  BC7C 012C                781          cmp.w   #300,d6
+000017CE  6F00 0004                782          ble     TEST_Y_DEBUT_STOP
+000017D2  4E75                     783          RTS
+000017D4                           784          
+000017D4                           785  TEST_Y_DEBUT_STOP:      
+000017D4  BE7C 02BC                786          cmp.w   #700,d7
+000017D8  6C00 0004                787          bge     TEST_Y_FIN_STOP
+000017DC  4E75                     788          RTS
+000017DE                           789          
+000017DE                           790  TEST_Y_FIN_STOP:        
+000017DE  BE7C 02E4                791          cmp.w   #740,d7
+000017E2  6F00 0088                792          ble     RELACHE_STOP
+000017E6  4E75                     793          RTS
+000017E8                           794          
+000017E8                           795                           **********************************RELACHE***********************
+000017E8                           796  RELACHE_PAS:
+000017E8  7200                     797          Move.l  #0,D1
+000017EA  4EB9 0000220A            798          JSR     GET_MOUSE
+000017F0  C03C 0001                799          AND.B   #%00000001,D0
+000017F4  4EB8 1764                800          JSR     RECUP_POS_SOURIS
+000017F8  B03C 0000                801          CMP.B   #0,d0
+000017FC  6700 0004                802          BEQ     TEST_X_RELACHE_DEBUT_PAS
+00001800  4E75                     803          rts
+00001802                           804  
+00001802                           805  
+00001802                           806  TEST_X_RELACHE_DEBUT_PAS:               
+00001802                           807          
+00001802  BC7C 0014                808          cmp.w   #20,d6
+00001806  6C00 0004                809          bge     TEST_X_RELACHE_FIN_PAS
+0000180A  4E75                     810          RTS
+0000180C                           811          
+0000180C                           812  TEST_X_RELACHE_FIN_PAS:
+0000180C                           813  
+0000180C  BC7C 0064                814          cmp.w   #100,d6
+00001810  6F00 0004                815          ble     TEST_Y_RELACHE_DEBUT_PAS
+00001814  4E75                     816          RTS
+00001816                           817  
+00001816                           818  TEST_Y_RELACHE_DEBUT_PAS:       
+00001816  BE7C 02BC                819          cmp.w   #700,d7
+0000181A  6C00 0004                820          bge     TEST_Y_RELACHE_FIN_PAS
+0000181E  4E75                     821          RTS
+00001820                           822          
+00001820                           823  TEST_Y_RELACHE_FIN_PAS:
+00001820                           824  
+00001820  BE7C 02E4                825          cmp.w   #740,d7
+00001824  6F00 0088                826          ble     STATUS_PAS
+00001828  4E75                     827          RTS
+0000182A                           828  
+0000182A                           829  
+0000182A                           830  RELACHE_CONTINUE:
+0000182A  7200                     831          Move.l  #0,D1
+0000182C  4EB9 0000220A            832          JSR     GET_MOUSE
+00001832  C03C 0001                833          AND.B   #%00000001,D0
+00001836  4EB8 1764                834          JSR     RECUP_POS_SOURIS
+0000183A  B03C 0000                835          CMP.B   #0,d0
+0000183E  6700 0004                836          BEQ     TEST_X_RELACHE_DEBUT_CONTINUE
+00001842  4E75                     837          rts
+00001844                           838  
+00001844                           839  
+00001844                           840  TEST_X_RELACHE_DEBUT_CONTINUE:
+00001844                           841          
+00001844  BC7C 0078                842          cmp.w   #120,d6
+00001848  6C00 0004                843          bge     TEST_X_RELACHE_FIN_CONTINUE
+0000184C  4E75                     844          RTS
+0000184E                           845          
+0000184E                           846  TEST_X_RELACHE_FIN_CONTINUE:
+0000184E                           847  
+0000184E  BC7C 00C8                848          cmp.w   #200,d6
+00001852  6F00 0004                849          ble     TEST_Y_RELACHE_DEBUT_CONTINUE
+00001856  4E75                     850          RTS
+00001858                           851  
+00001858                           852  TEST_Y_RELACHE_DEBUT_CONTINUE:  
+00001858  BE7C 02BC                853          cmp.w   #700,d7
+0000185C  6C00 0004                854          bge     TEST_Y_RELACHE_FIN_CONTINUE
+00001860  4E75                     855          RTS
+00001862                           856          
+00001862                           857  TEST_Y_RELACHE_FIN_CONTINUE:
+00001862                           858  
+00001862  BE7C 02E4                859          cmp.w   #740,d7
+00001866  6F00 0050                860          ble     STATUS_CONTINUE
+0000186A  4E75                     861          RTS
+0000186C                           862  
+0000186C                           863  
+0000186C                           864  RELACHE_STOP:
+0000186C  7200                     865          Move.l  #0,D1
+0000186E  4EB9 0000220A            866          JSR     GET_MOUSE
+00001874  C03C 0001                867          AND.B   #%00000001,D0
+00001878  4EB8 1764                868          JSR     RECUP_POS_SOURIS
+0000187C  B03C 0000                869          CMP.B   #0,d0
+00001880  6700 0004                870          BEQ     TEST_X_RELACHE_DEBUT_STOP
+00001884  4E75                     871          rts
+00001886                           872  
+00001886                           873  
+00001886                           874  TEST_X_RELACHE_DEBUT_STOP:              
+00001886                           875          
+00001886  BC7C 00DC                876          cmp.w   #220,d6
+0000188A  6C00 0004                877          bge     TEST_X_RELACHE_FIN_STOP
+0000188E  4E75                     878          RTS
+00001890                           879          
+00001890                           880  TEST_X_RELACHE_FIN_STOP:
+00001890                           881  
+00001890  BC7C 012C                882          cmp.w   #300,d6
+00001894  6F00 0004                883          ble     TEST_Y_RELACHE_DEBUT_STOP
+00001898  4E75                     884          RTS
+0000189A                           885  
+0000189A                           886  TEST_Y_RELACHE_DEBUT_STOP:      
+0000189A  BE7C 02BC                887          cmp.w   #700,d7
+0000189E  6C00 0004                888          bge     TEST_Y_RELACHE_FIN_STOP
+000018A2  4E75                     889          RTS
+000018A4                           890          
+000018A4                           891  TEST_Y_RELACHE_FIN_STOP:
+000018A4                           892  
+000018A4  BE7C 02E4                893          cmp.w   #740,d7
+000018A8  6F00 0018                894          ble     STATUS_STOP
+000018AC  4E75                     895          RTS
+000018AE                           896  
+000018AE                           897  
+000018AE                           898  STATUS_PAS:
+000018AE                           899                  *******   STATUS: 1=PAS////2=CONTINUE////3=STOP    ******       
+000018AE                           900  
+000018AE  33FC 0001 0000204A       901          MOVE.W  #1,STATUS
+000018B6  4E75                     902          RTS
+000018B8                           903          
+000018B8                           904  STATUS_CONTINUE:
+000018B8                           905          
+000018B8                           906  
+000018B8  33FC 0002 0000204A       907          MOVE.W  #2,STATUS
+000018C0  4E75                     908          RTS
+000018C2                           909          
+000018C2                           910  STATUS_STOP:
+000018C2                           911  
+000018C2  33FC 0003 0000204A       912          MOVE.W  #3,STATUS
+000018CA  4E75                     913          RTS
+000018CC                           914  
+000018CC                           915  
+000018CC                           916  
+000018CC                           917  
+000018CC                           918  
+000018CC                           919  
+000018CC                           920  
+000018CC                           921  
+000018CC                           922  
+000018CC                           923  
+000018CC                           924  
+000018CC                           925  
+000018CC                           926  
+000018CC                           927  
+000018CC                           928  
+000018CC                           929  
+000018CC                           930  ARRET:
+000018CC  4E75                     931          RTS
+000018CE                           932  
+000018CE  4E75                     933          rts     
+000018D0                           934          
+000018D0                           935          
+000018D0                           936          
+000018D0                           937          
+000018D0                           938          
+000018D0                           939          
+000018D0                           940  
+000018D0                           941  
+000018D0                           942  
+000018D0                           943  
+000018D0                           944  
+000018D0                           945  
+000018D0                           946  
+000018D0                           947  
+000018D0                           948  
+000018D0                           949  
+000018D0                           950          
+000018D0                           951                  
+00002000                           952          org     $2000
+00002000                           953  
+00002000= 000E                     954  CELLULE_X:      DC.W    14
+00002002= 000E                     955  CELLULE_Y:      DC.W    14
+00002004= 0000                     956  SAVE_D2:        DC.W    0
+00002006= 0000                     957  SAVE_D3:        DC.W    0
+00002008= 5649 5641 4E54 4...      958  C1:     DC.W    'VIVANTE',0
+00002012= 4D4F 5254 4500 0000      959  C2:     DC.W    'MORTE',0       
+0000201A= 4E41 4954 0000           960  C3:     DC.W    'NAIT',0
+00002020= 4D45 5552 5400 0000      961  C4:     DC.W    'MEURT',0
+00002028= 5041 5320 4120 5...      962  B1:     DC.W    'PAS A PAS',0
+00002034= 204E 4F4E 2053 5...      963  B2:     DC.W    ' NON STOP',0   
+00002040= 2020 2053 544F 5...      964  B3:     DC.W    '   STOP',0
+0000204A                           965          
+0000204A= 0000                     966  STATUS: DC.W    0
+0000204C                           967  TAB:    DS.B    256
+0000214C                           968  
+0000214C                           969  
+0000214C                           970  
+0000214C                           971  
+0000214C                           972  
+0000214C                           973  
+0000214C                           974  
+0000214C                           975          INCLUDE 'Bibgraph.X68'  
+0000214C                           976  SET_PEN_COLOR:
+0000214C                           977          
+0000214C  303C 0050                978          MOVE    #80,D0
+00002150  4E4F                     979          TRAP    #15
+00002152  4E75                     980          RTS
+00002154                           981  SET_FILL_COLOR:
+00002154                           982  
+00002154  303C 0051                983          MOVE    #81,D0
+00002158  4E4F                     984          TRAP    #15
+0000215A  4E75                     985          RTS
+0000215C                           986          
+0000215C                           987  DRAW_PIX:
+0000215C  303C 0052                988          MOVE    #82,D0
+00002160  4E4F                     989          TRAP    #15
+00002162  4E75                     990          RTS
+00002164                           991          
+00002164                           992  GET_PIX_COLOR:
+00002164                           993  
+00002164  303C 0053                994          MOVE    #83,D0
+00002168  4E4F                     995          TRAP    #15
+0000216A  4E75                     996          RTS
+0000216C                           997          
+0000216C                           998  DRAW_LINE:
+0000216C                           999  
+0000216C  303C 0054               1000          MOVE    #84,D0
+00002170  4E4F                    1001          TRAP    #15
+00002172  4E75                    1002          RTS
+00002174                          1003          
+00002174                          1004  DRAW_TO:
+00002174                          1005  
+00002174  303C 0055               1006          MOVE    #85,D0
+00002178  4E4F                    1007          TRAP    #15
+0000217A  4E75                    1008          RTS
+0000217C                          1009          
+0000217C                          1010  MOVE_TO:
+0000217C                          1011  
+0000217C  303C 0056               1012          MOVE    #86,D0
+00002180  4E4F                    1013          TRAP    #15
+00002182  4E75                    1014          RTS
+00002184                          1015          
+00002184                          1016  DRAW_FILL_RECT:
+00002184                          1017  
+00002184  303C 0057               1018          MOVE    #87,D0
+00002188  4E4F                    1019          TRAP    #15
+0000218A  4E75                    1020          RTS
+0000218C                          1021  
+0000218C                          1022  DRAW_FILL_ELLIPSE:
+0000218C                          1023  
+0000218C  303C 0058               1024          MOVE    #88,D0
+00002190  4E4F                    1025          TRAP    #15
+00002192  4E75                    1026          RTS
+00002194                          1027          
+00002194                          1028  POT_DE_PEINTURE:
+00002194                          1029  
+00002194  303C 0059               1030          MOVE    #89,D0
+00002198  4E4F                    1031          TRAP    #15
+0000219A  4E75                    1032          RTS
+0000219C                          1033          
+0000219C                          1034  DRAW_RECT:
+0000219C                          1035          
+0000219C  303C 005A               1036          MOVE    #90,D0
+000021A0  4E4F                    1037          TRAP    #15
+000021A2  4E75                    1038          RTS
+000021A4                          1039  
+000021A4                          1040  DRAW_ELLIPSE:
+000021A4                          1041          
+000021A4  303C 005B               1042          MOVE    #91,D0
+000021A8  4E4F                    1043          TRAP    #15
+000021AA  4E75                    1044          RTS
+000021AC                          1045          
+000021AC                          1046  WIDTH_PEN:
+000021AC                          1047  
+000021AC  303C 005C               1048          MOVE    #92,D0
+000021B0  4E4F                    1049          TRAP    #15
+000021B2  4E75                    1050          RTS
+000021B4                          1051                  
+000021B4                          1052  DRAW_STRING:
+000021B4                          1053  
+000021B4  303C 005F               1054          MOVE    #95,D0
+000021B8  4E4F                    1055          TRAP    #15
+000021BA  4E75                    1056          RTS
+000021BC                          1057  
+000021BC                          1058  SWAP_SCREEN:
+000021BC                          1059  
+000021BC  303C 005E               1060          MOVE    #94,D0
+000021C0  4E4F                    1061          TRAP    #15
+000021C2  4E75                    1062          RTS
+000021C4                          1063          
+000021C4                          1064  DRAW_MODE:
+000021C4                          1065  
+000021C4  303C 005C               1066          MOVE    #92,D0
+000021C8  4E4F                    1067          TRAP    #15
+000021CA  4E75                    1068          RTS     
+000021CC                          1069  
+000021CC                          1070  -------------------- end include --------------------
+000021CC                          1071          INCLUDE 'Biblio.X68'
+000021CC                          1072  AFFCAR:         
+000021CC  303C 0006               1073          MOVE    #6,D0
+000021D0  4E4F                    1074          TRAP    #15
+000021D2  4E75                    1075          RTS
+000021D4                          1076          
+000021D4                          1077  SAISCAR:                
+000021D4  303C 0005               1078          MOVE    #5,D0
+000021D8  4E4F                    1079          TRAP    #15
+000021DA  4E75                    1080          RTS
+000021DC                          1081          
+000021DC                          1082          
+000021DC                          1083  FINPRG:         
+000021DC  303C 0009               1084          MOVE    #9,D0
+000021E0  4E4F                    1085          TRAP    #15
+000021E2                          1086  
+000021E2                          1087  GET_TIME:
+000021E2                          1088          
+000021E2  303C 0008               1089          MOVE    #8,D0
+000021E6  4E4F                    1090          TRAP    #15
+000021E8  4E75                    1091          RTS
+000021EA                          1092          
+000021EA                          1093  POS_CURS:
+000021EA                          1094          
+000021EA  303C 000B               1095          MOVE    #11,D0
+000021EE  4E4F                    1096          TRAP    #15
+000021F0  4E75                    1097          RTS
+000021F2                          1098  
+000021F2                          1099  GET_AFFCAR:
+000021F2                          1100  
+000021F2  303C 0016               1101          MOVE    #22,D0
+000021F6  4E4F                    1102          TRAP    #15
+000021F8  4E75                    1103          RTS     
+000021FA                          1104          
+000021FA                          1105                  
+000021FA                          1106  -------------------- end include --------------------
+000021FA                          1107          INCLUDE 'Bibperiph.X68'
+000021FA                          1108  HARDWARE:
+000021FA  303C 0020               1109          MOVE    #32,D0
+000021FE  4E4F                    1110          TRAP    #15
+00002200  4E75                    1111          RTS
+00002202                          1112  
+00002202                          1113  RESOLUTION:
+00002202                          1114  
+00002202  303C 0021               1115          MOVE    #33,D0
+00002206  4E4F                    1116          TRAP    #15
+00002208  4E75                    1117          RTS
+0000220A                          1118  
+0000220A                          1119  GET_MOUSE:
+0000220A                          1120  
+0000220A  303C 003D               1121          MOVE    #61,D0
+0000220E  4E4F                    1122          TRAP    #15
+00002210  4E75                    1123          RTS
+00002212                          1124  
+00002212                          1125  MOUSE:
+00002212                          1126  
+00002212  303C 003C               1127          MOVE    #60,D0
+00002216  4E4F                    1128          TRAP    #15     
+00002218  4E75                    1129          RTS             
+0000221A                          1130  
+0000221A                          1131  -------------------- end include --------------------
+0000221A                          1132          END     $1000   
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+AFFCAR              21CC
+AFFECTATION         10CA
+AJOUT_VIE           156E
+ARRET               18CC
+AUTRE_L             1036
+B1                  2028
+B2                  2034
+B3                  2040
+BOUCLE              10D8
+BOUCLE_C            1102
+BOUCLE_C_NEW_GENE   1244
+BOUCLE_C_RANDOM     109C
+BOUCLE_C_TEST       1156
+BOUCLE_L            10EE
+BOUCLE_L_NEW_GENE   122C
+BOUCLE_L_RANDOM     107C
+BOUCLE_L_TEST       1138
+BOUCLE_NEW_GENE     1218
+BOUCLE_RANDOM       1066
+BOUCLE_TEST         1116
+BOUTONS_STOP        13D4
+BOUTON_CONTINUE     1396
+BOUTON_PAS_A_PAS    1358
+C1                  2008
+C2                  2012
+C3                  201A
+C4                  2020
+CELLULE_X           2000
+CELLULE_Y           2002
+CHECK               1168
+CLOCK               1286
+CLOCK_DEMI          1294
+CLOCK_RANDOM        1312
+COLOR_MORT          16D8
+COLOR_NAIT          1660
+COMPTEUR            11CE
+DERN_C              1056
+DERN_L              105C
+DIE                 1202
+DRAW_ELLIPSE        21A4
+DRAW_FILL_ELLIPSE   218C
+DRAW_FILL_RECT      2184
+DRAW_LINE           216C
+DRAW_MODE           21C4
+DRAW_PIX            215C
+DRAW_RECT           219C
+DRAW_STRING         21B4
+DRAW_TO             2174
+FIN                 1006
+FINPRG              21DC
+GENESE              1256
+GET_AFFCAR          21F2
+GET_MOUSE           220A
+GET_PIX_COLOR       2164
+GET_TIME            21E2
+GRILLE              131E
+HARDWARE            21FA
+INIT                100C
+INTERMED            1540
+LEGENDE_MORTE       1450
+LEGENDE_MOURANTE    14CC
+LEGENDE_NAISSANTE   148E
+LEGENDE_VIE         1412
+LINE_1              102C
+LINE_1B             105E
+MAZ                 101C
+MEURT               1270
+MOURRANTE           120C
+MOUSE               2212
+MOVE_TO             217C
+NAISSANTE           1212
+NAIT                126A
+OPERATION           11E0
+POS_CURS            21EA
+POT_DE_PEINTURE     2194
+QUADRILLAGE_C       1528
+QUADRILLAGE_L       1556
+RANDOM              10AE
+RAZ_POINT           15E8
+RAZ_STATUS          12C8
+RECUP_POS_SOURIS    1764
+RELACHE_CONTINUE    182A
+RELACHE_PAS         17E8
+RELACHE_STOP        186C
+RESOLUTION          2202
+SAISCAR             21D4
+SAUT_C              1046
+SAVE_D2             2004
+SAVE_D3             2006
+SET_FILL_COLOR      2154
+SET_PEN_COLOR       214C
+STATUS              204A
+STATUS_1            12D8
+STATUS_2            12D2
+STATUS_3            12E2
+STATUS_CONTINUE     18B8
+STATUS_PAS          18AE
+STATUS_STOP         18C2
+STATUS_TEST         129C
+SWAP_SCREEN         21BC
+TAB                 204C
+TEST_ENFONCE        1748
+TEST_X_DEBUT_CONTINUE  1796
+TEST_X_DEBUT_PAS    176C
+TEST_X_DEBUT_STOP   17C0
+TEST_X_FIN_CONTINUE  17A0
+TEST_X_FIN_PAS      1776
+TEST_X_FIN_STOP     17CA
+TEST_X_RELACHE_DEBUT_CONTINUE  1844
+TEST_X_RELACHE_DEBUT_PAS  1802
+TEST_X_RELACHE_DEBUT_STOP  1886
+TEST_X_RELACHE_FIN_CONTINUE  184E
+TEST_X_RELACHE_FIN_PAS  180C
+TEST_X_RELACHE_FIN_STOP  1890
+TEST_Y_DEBUT_CONTINUE  17AC
+TEST_Y_DEBUT_PAS    1782
+TEST_Y_DEBUT_STOP   17D4
+TEST_Y_FIN_CONTINUE  17B6
+TEST_Y_FIN_PAS      178C
+TEST_Y_FIN_STOP     17DE
+TEST_Y_RELACHE_DEBUT_CONTINUE  1858
+TEST_Y_RELACHE_DEBUT_PAS  1816
+TEST_Y_RELACHE_DEBUT_STOP  189A
+TEST_Y_RELACHE_FIN_CONTINUE  1862
+TEST_Y_RELACHE_FIN_PAS  1820
+TEST_Y_RELACHE_FIN_STOP  18A4
+TIME                1278
+TIME_RANDOM         1308
+VIE                 11F0
+VIE_MORT            11D2
+WIDTH_PEN           21AC

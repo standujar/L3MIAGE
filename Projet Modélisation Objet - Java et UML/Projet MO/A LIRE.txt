@@ -1,0 +1,5 @@
+L'archive zip ce compose de :
+
+1 fichier PDF rapport
+
+2 dossiers, un contenant les sources généré par l'UML et un comprenant 7 sous dossier (XML ou CDG, et PDF) qui comportent chaques diagrammes.

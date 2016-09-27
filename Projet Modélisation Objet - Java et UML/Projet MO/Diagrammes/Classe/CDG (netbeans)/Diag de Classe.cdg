@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Multi-file class diagram">
+  <ClassDiagramComponents>
+    <Class name="Planning" package="MO" visibility="public" xPosition="1557.0" yPosition="473.0">
+      <Fields>
+        <Field name="id_planning" type="int" visibility="public"/>
+        <Field name="nomPlanning" type="String" visibility="public"/>
+        <Field name="typeFormat" type="int" visibility="public"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="getId_Planning" returnType="int" visibility="public"/>
+        <Method name="getNom_Planning" returnType="String" visibility="public"/>
+        <Method name="getTypeFormat" returnType="int" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="acteur" package="MO" visibility="public" xPosition="1089.0" yPosition="229.0">
+      <Fields>
+        <Field name="nom" type="String" visibility="protected"/>
+        <Field name="prenom" type="String" visibility="protected"/>
+        <Field name="id" type="int" visibility="protected"/>
+        <Field name="salaire" type="double" visibility="protected"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="String" name="p"/>
+          <Argument type="int" name="id"/>
+          <Argument type="double" name="s"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="consulterPlanning" returnType="Planning" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="chefdeprojet" package="MO" visibility="public" xPosition="1557.0" yPosition="964.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="String" name="p"/>
+          <Argument type="int" name="id"/>
+          <Argument type="double" name="s"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="Ajout_precedence" returnType="int" visibility="public">
+          <Argument type="int" name="cible"/>
+          <Argument type="int" name="id"/>
+        </Method>
+        <Method name="CreerUneTache" returnType="tache" visibility="public"/>
+        <Method name="Set_CoutFinancier" returnType="double" visibility="public">
+          <Argument type="double" name="cout"/>
+        </Method>
+        <Method name="AffecterControleur" returnType="controleur" visibility="public">
+          <Argument type="int" name="id_projet"/>
+          <Argument type="controleur" name="c"/>
+        </Method>
+        <Method name="AffecterResponsable" returnType="responsable" visibility="public">
+          <Argument type="projet" name="p"/>
+          <Argument type="responsable" name="r"/>
+        </Method>
+        <Method name="ChangerResponsable" returnType="responsable" visibility="public">
+          <Argument type="projet" name="p"/>
+          <Argument type="responsable" name="r"/>
+          <Argument type="responsable" name="nr"/>
+        </Method>
+        <Method name="ChangerControleur" returnType="controleur" visibility="public">
+          <Argument type="projet" name="p"/>
+          <Argument type="controleur" name="c"/>
+          <Argument type="controleur" name="nc"/>
+        </Method>
+        <Method name="supprimerTache" returnType="tache" visibility="public">
+          <Argument type="tache" name="t"/>
+        </Method>
+        <Method name="ajout_livrable" returnType="livrable" visibility="public">
+          <Argument type="livrable" name="li"/>
+        </Method>
+        <Method name="set_Etat" returnType="int" visibility="public">
+          <Argument type="tache" name="t"/>
+          <Argument type="int" name="cible"/>
+        </Method>
+        <Method name="set_DateProjet" returnType="Date" visibility="public">
+          <Argument type="Date" name="debut"/>
+          <Argument type="Date" name="fin"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class name="controleur" package="MO" visibility="public" xPosition="721.0" yPosition="267.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="String" name="p"/>
+          <Argument type="int" name="id"/>
+          <Argument type="double" name="s"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="ValiderTache" returnType="tache" visibility="public">
+          <Argument type="tache" name="t"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class name="intervenant" package="MO" visibility="public" xPosition="1482.0" yPosition="276.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="String" name="p"/>
+          <Argument type="int" name="id"/>
+          <Argument type="double" name="s"/>
+        </Constructor>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="livrable" package="MO" visibility="public" xPosition="2150.0" yPosition="48.0">
+      <Fields>
+        <Field name="nom" type="String" visibility="private"/>
+        <Field name="etatlivrable" type="etatLivrable" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="etatLivrable" name="etatli"/>
+        </Constructor>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="projet" package="MO" visibility="public" xPosition="117.0" yPosition="1017.0">
+      <Fields>
+        <Field name="id_projet" type="int" visibility="protected"/>
+        <Field name="nomProjet" type="String" visibility="private"/>
+        <Field name="nombreTache" type="int" visibility="public"/>
+        <Field name="coutFinancier" type="double" visibility="private"/>
+        <Field name="DateDebut" type="Date" visibility="private"/>
+        <Field name="DateFin" type="Date" visibility="private"/>
+        <Field name="TempsTotal" type="int" visibility="private"/>
+        <Field name="taches" type="List&lt;tache&gt;" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="int" name="idp"/>
+          <Argument type="String" name="nomp"/>
+          <Argument type="int" name="nmtache"/>
+          <Argument type="double" name="cf"/>
+          <Argument type="Date" name="dd"/>
+          <Argument type="Date" name="df"/>
+          <Argument type="int" name="tempstot"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="VerifPrecedence" returnType="boolean" visibility="private"/>
+        <Method name="MaJ" returnType="void" visibility="private"/>
+        <Method name="GenererPlanning" returnType="boolean" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="responsable" package="MO" visibility="public" xPosition="1650.0" yPosition="20.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="n"/>
+          <Argument type="String" name="p"/>
+          <Argument type="int" name="id"/>
+          <Argument type="double" name="s"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="AffecterInter" returnType="intervenant" visibility="public">
+          <Argument type="tache" name="t"/>
+          <Argument type="intervenant" name="i"/>
+        </Method>
+        <Method name="ModifierInter" returnType="intervenant" visibility="public">
+          <Argument type="tache" name="t"/>
+          <Argument type="intervenant" name="i"/>
+          <Argument type="intervenant" name="in"/>
+        </Method>
+        <Method name="SupprimerInter" returnType="intervenant" visibility="public">
+          <Argument type="tache" name="t"/>
+          <Argument type="intervenant" name="i"/>
+        </Method>
+        <Method name="ChangerEtatTache" returnType="tache" visibility="public">
+          <Argument type="tache" name="t"/>
+        </Method>
+        <Method name="ChangerEtatLivrable" returnType="livrable" visibility="public">
+          <Argument type="livrable" name="li"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class name="tache" package="MO" visibility="public" xPosition="122.0" yPosition="83.0">
+      <Fields>
+        <Field name="id" type="int" visibility="private"/>
+        <Field name="nom" type="String" visibility="private"/>
+        <Field name="nbHeure" type="int" visibility="private"/>
+        <Field name="coutFinancier" type="double" visibility="private"/>
+        <Field name="dateMini" type="Date" visibility="private"/>
+        <Field name="dateMaxi" type="Date" visibility="private"/>
+        <Field name="etat" type="etatTache" visibility="private"/>
+        <Field name="listeTache" type="List&lt;tache&gt;" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="int" name="id"/>
+          <Argument type="String" name="n"/>
+          <Argument type="int" name="nbH"/>
+          <Argument type="double" name="cf"/>
+          <Argument type="Date" name="dmin"/>
+          <Argument type="Date" name="dmax"/>
+          <Argument type="etatTache" name="etat"/>
+        </Constructor>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Enum name="etatLivrable" package="MO" visibility="public" xPosition="2488.0" yPosition="63.0">
+      <Literals>
+        <Literal name="ENCOURS"/>
+        <Literal name="ENVOYE"/>
+      </Literals>
+    </Enum>
+    <Enum name="etatTache" package="MO" visibility="public" xPosition="157.0" yPosition="473.0">
+      <Literals>
+        <Literal name="ENATTENTE"/>
+        <Literal name="VALIDEE"/>
+        <Literal name="TERMINEE"/>
+        <Literal name="DEBUTEE"/>
+        <Literal name="PREVUE"/>
+        <Literal name="EN_REALISATION"/>
+      </Literals>
+    </Enum>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <HasRelation name="listeTache" source="MO.tache" target="MO.tache" type="Aggregation" sourceCardinality="1..1" targetCardinality="0..*" collectionType="List&lt;tache&gt;"/>
+    <IsRelation name="is" source="MO.controleur" target="MO.acteur"/>
+    <UseRelation source="MO.chefdeprojet" target="MO.tache" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="etat" source="MO.tache" target="MO.etatTache" type="Aggregation" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.chefdeprojet" target="MO.livrable" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <IsRelation name="is" source="MO.chefdeprojet" target="MO.acteur"/>
+    <UseRelation name="a" source="MO.chefdeprojet" target="MO.projet" sourceCardinality="1..*" targetCardinality="1..1"/>
+    <IsRelation name="is" source="MO.responsable" target="MO.acteur"/>
+    <UseRelation source="MO.chefdeprojet" target="MO.responsable" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.responsable" target="MO.livrable" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.acteur" target="MO.Planning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="etatlivrable" source="MO.livrable" target="MO.etatLivrable" type="Aggregation" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.responsable" target="MO.tache" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.chefdeprojet" target="MO.controleur" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="MO.controleur" target="MO.tache" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <IsRelation name="is" source="MO.intervenant" target="MO.acteur"/>
+    <HasRelation name="taches" source="MO.projet" target="MO.tache" type="Aggregation" sourceCardinality="1..1" targetCardinality="0..*" collectionType="List&lt;tache&gt;"/>
+  </ClassDiagramRelations>
+</ClassDiagram>
